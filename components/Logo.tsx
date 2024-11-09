@@ -15,4 +15,17 @@ const Logo = () => {
   );
 };
 
+export const LogoMobile = () => {
+  return (
+    <a
+      href="/"
+      className="flex items-center gap-2  w-full justify-center  p-2 "
+    >
+      <p className="text-3xl font-bold leading-tight tracking-tighter text-transparent bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text">
+        BudgetTracker
+      </p>
+    </a>
+  );
+};
+
 export default Logo;
