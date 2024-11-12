@@ -101,7 +101,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel className="mr-2">Category</FormLabel>
                     <FormControl>
                       <CategoryPicker type={type} />
                     </FormControl>

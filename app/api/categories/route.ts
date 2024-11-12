@@ -25,6 +25,11 @@ export async function GET(request: Request) {
   const categories = await prisma.category.findMany({
     where: {
       userId: user.id,
+      ...(type && { type }),
+    },
+    orderBy: {
+      name: "asc",
     },
   });
+  return Response.json(categories);
 }

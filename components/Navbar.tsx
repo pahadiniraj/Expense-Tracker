@@ -10,8 +10,8 @@ import { ThemeSwitcherBtn } from "./ThemeSwitcherBtn";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 import { CiMenuBurger } from "react-icons/ci";
 import { Menu } from "lucide-react";
-import { DialogTitle } from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { DialogTitle } from "./ui/dialog";
 
 const Navbar = () => {
   return (
