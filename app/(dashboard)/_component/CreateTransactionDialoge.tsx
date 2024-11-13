@@ -16,12 +16,6 @@ import {
   CreateTransactionSchemaType,
 } from "@/schema/transaction";
 import { ReactNode, useCallback, useState } from "react";
-
-interface Props {
-  trigger: ReactNode;
-  type: TransactionType;
-}
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,6 +43,11 @@ import { CreateTransaction } from "../_actions/transaction";
 import { toast } from "sonner";
 import { DateToUTCDate } from "@/lib/helpers";
 
+interface Props {
+  trigger: ReactNode;
+  type: TransactionType;
+}
+
 const CreateTransactionDialoge = ({ trigger, type }: Props) => {
   const form = useForm<CreateTransactionSchemaType>({
     resolver: zodResolver(CreateTransactionSchema),
@@ -74,7 +73,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
   const { mutate, isPending } = useMutation({
     mutationFn: CreateTransaction,
     onSuccess: () => {
-      toast.success("Transaction created success", {
+      toast.success("Transaction created successfully", {
         id: "create-transaction",
       });
 
@@ -96,7 +95,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
 
   const onSubmit = useCallback(
     (values: CreateTransactionSchemaType) => {
-      toast.loading("Create transaction ...", { id: "create-transaction" });
+      toast.loading("Creating transaction...", { id: "create-transaction" });
 
       mutate({
         ...values,
@@ -109,13 +108,13 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-full sm:max-w-lg p-4">
         <DialogHeader>
           <DialogTitle>
             Create a new{" "}
             <span
               className={cn(
-                "m-1",
+                "mr-1",
                 type === "income" ? "text-emerald-500" : "text-red-500"
               )}
             >
@@ -133,7 +132,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input type="text" {...field} />
+                    <Input type="text" {...field} className="w-full" />
                   </FormControl>
                   <FormDescription>
                     Transaction description (optional)
@@ -148,7 +147,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
                 <FormItem>
                   <FormLabel>Amount</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input type="number" {...field} className="w-full" />
                   </FormControl>
                   <FormDescription>
                     Transaction Amount (required)
@@ -157,12 +156,12 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
               )}
             />
 
-            <div className="flex justify-between  gap-2">
+            <div className="flex flex-col sm:flex-row justify-between gap-2">
               <FormField
                 control={form.control}
                 name="category"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-full">
                     <FormLabel className="mr-2">Category</FormLabel>
                     <FormControl>
                       <CategoryPicker
@@ -171,7 +170,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
                       />
                     </FormControl>
                     <FormDescription>
-                      Selecet a category for this transaction
+                      Select a category for this transaction
                     </FormDescription>
                   </FormItem>
                 )}
@@ -180,7 +179,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
                 control={form.control}
                 name="date"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="w-full">
                     <FormLabel className="">Transaction Date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -188,7 +187,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-200px pl-3 text-left font-normal",
+                              "w-full pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -222,7 +221,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
             </div>
           </form>
         </Form>
-        <DialogFooter>
+        <DialogFooter className="flex gap-2">
           <DialogClose asChild>
             <Button
               type="button"
@@ -230,11 +229,16 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
               onClick={() => {
                 form.reset();
               }}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
           </DialogClose>
-          <Button onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={isPending}
+            className="w-full sm:w-auto"
+          >
             {!isPending && "Create"}
             {isPending && <Loader2 className="animate-spin" />}
           </Button>

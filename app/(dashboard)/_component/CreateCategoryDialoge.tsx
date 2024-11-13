@@ -202,7 +202,7 @@ const CreateCategoryDialoge = ({ type, successCallBack }: Props) => {
             />
           </form>
         </Form>
-        <DialogFooter>
+        <DialogFooter className="flex gap-2">
           <DialogClose asChild>
             <Button
               type="button"
