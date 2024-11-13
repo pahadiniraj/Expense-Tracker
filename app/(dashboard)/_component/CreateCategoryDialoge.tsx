@@ -32,7 +32,7 @@ import {
   CreateCategorySchemaType,
 } from "@/schema/categories";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleOff, Loader, PlusSquare } from "lucide-react";
+import { CircleOff, Loader, Loader2, PlusSquare } from "lucide-react";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Picker from "@emoji-mart/react";
@@ -216,7 +216,7 @@ const CreateCategoryDialoge = ({ type, successCallBack }: Props) => {
           </DialogClose>
           <Button onClick={form.handleSubmit(onSubmit)} disabled={isPending}>
             {!isPending && "Create"}
-            {isPending && <Loader className="animate-spin" />}
+            {isPending && <Loader2 className="animate-spin" />}
           </Button>
         </DialogFooter>
       </DialogContent>

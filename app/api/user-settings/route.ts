@@ -23,10 +23,21 @@ export async function POST(request: Request) {
 
   const { currency } = await request.json();
 
-  const updatedSettings = await prisma.userSettings.update({
-    where: { userID: user.id },
-    data: { currency },
-  });
+  if (!currency || typeof currency !== "string") {
+    return NextResponse.json({
+      error: "Currency is required and must be a string",
+    });
+  }
 
-  return NextResponse.json(updatedSettings);
+  try {
+    const updatedSettings = await prisma.userSettings.upsert({
+      where: { userID: user.id },
+      update: { currency },
+      create: { userID: user.id, currency },
+    });
+
+    return NextResponse.json(updatedSettings);
+  } catch (error) {
+    return NextResponse.json({ error: "Failed to update user settings" });
+  }
 }

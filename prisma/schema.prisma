@@ -37,7 +37,7 @@ model Transaction {
   date DateTime
   userId String
   type String @default("income")
-  categegory String
+  category String
   categoryIcon String
 }
 
