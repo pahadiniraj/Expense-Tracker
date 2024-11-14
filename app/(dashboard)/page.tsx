@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import CreateTransactionDialoge from "./_component/CreateTransactionDialoge";
 import Overview from "./_component/Overview";
+import History from "./_component/History";
 
 const page = async () => {
   const user = await currentUser();
@@ -23,9 +24,9 @@ const page = async () => {
   }
 
   return (
-    <div className="h-full bg-background ">
+    <div className="min-h-screen bg-background ">
       <div className="border-b bg-card">
-        <div className="container  mx-auto px-8 flex flex-wrap items-center justify-between gap-6 py-8">
+        <div className="container  mx-auto px-4 flex flex-wrap items-center justify-between gap-6 py-8">
           <p className="text-3xl font-bold "> Hello,{user.firstName}! 👋</p>
 
           <div className="flex items-center gap-2">
@@ -47,7 +48,7 @@ const page = async () => {
                   variant={"outline"}
                   className="border-rose-500 bg-rose-950 text-white hover:bg-rose-700 hover:text-white"
                 >
-                  New Expense 😡
+                  New Expense 🥹
                 </Button>
               }
             />
@@ -55,6 +56,8 @@ const page = async () => {
         </div>
       </div>
       <Overview userSettings={userSettings} />
+
+      <History userSettings={userSettings} />
     </div>
   );
 };

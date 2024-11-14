@@ -108,7 +108,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-full sm:max-w-lg p-4">
+      <DialogContent className="max-w-full sm:max-w-lg p-4 max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             Create a new{" "}

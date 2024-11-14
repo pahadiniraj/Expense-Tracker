@@ -114,7 +114,7 @@ const CreateCategoryDialoge = ({ type, successCallBack }: Props) => {
           Create new
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className=" max-h-screen overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             Create{" "}
@@ -182,14 +182,16 @@ const CreateCategoryDialoge = ({ type, successCallBack }: Props) => {
                           )}
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-full">
+                      <PopoverContent className=" w-full max-h-[230px] overflow-y-auto ">
                         <Picker
                           data={Data}
                           theme={theme.resolvedTheme}
                           onEmojiSelect={(emoji: { native: string }) => {
                             form.setValue("icon", emoji.native);
                             field.onChange(emoji.native);
+                            25;
                           }}
+                          style={{ maxHeight: "250px", overflowY: "auto" }}
                         />
                       </PopoverContent>
                     </Popover>

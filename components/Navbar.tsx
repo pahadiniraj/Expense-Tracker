@@ -32,7 +32,7 @@ export const MobileNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <div className="block border-seperate bg-background md:hidden ">
-      <nav className="container flex items-center justify-between px-2">
+      <nav className="container flex items-center justify-between px-2 ">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button variant={"ghost"} size={"icon"}>
