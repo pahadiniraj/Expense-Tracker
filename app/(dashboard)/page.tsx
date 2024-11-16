@@ -56,7 +56,6 @@ const page = async () => {
         </div>
       </div>
       <Overview userSettings={userSettings} />
-
       <History userSettings={userSettings} />
     </div>
   );

@@ -10,7 +10,6 @@ import { redirect } from "next/navigation";
 
 export async function CreateTransaction(form: CreateTransactionSchemaType) {
   const parsedBody = CreateTransactionSchema.safeParse(form);
-  console.log(parsedBody.data);
 
   if (!parsedBody.success) {
     throw new Error(parsedBody.error.message);

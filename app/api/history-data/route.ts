@@ -136,7 +136,7 @@ async function getMonthHistoryData(
   const history: HistoryData[] = [];
 
   const daysInMonth = getDaysInMonth(new Date(year, month));
-  for (let i = 1; i <= 31; i++) {
+  for (let i = 1; i <= daysInMonth; i++) {
     let expense = 0;
     let income = 0;
 
