@@ -44,9 +44,9 @@ const History = ({ userSettings }: { userSettings: UserSettings }) => {
     historyDataQuery.data && historyDataQuery.data.length > 0;
 
   return (
-    <div className="container mx-auto ">
+    <div className="container mx-auto md:px-4 ">
       <h2 className="mt-12 text-3xl font-bold ">History</h2>
-      <Card className="col-span-12 mt-12 w-full">
+      <Card className="col-span-12 my-8 w-full">
         <CardHeader className="gap-2">
           <CardTitle className="grid grid-flow-row justify-between gap-2 md:grid-flow-col">
             <HistoryPeriodSelector
