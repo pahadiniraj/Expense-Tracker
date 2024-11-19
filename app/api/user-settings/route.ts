@@ -24,9 +24,12 @@ export async function POST(request: Request) {
   const { currency } = await request.json();
 
   if (!currency || typeof currency !== "string") {
-    return NextResponse.json({
-      error: "Currency is required and must be a string",
-    });
+    return NextResponse.json(
+      {
+        error: "Currency is required and must be a string",
+      },
+      { status: 400 }
+    );
   }
 
   try {
@@ -38,6 +41,10 @@ export async function POST(request: Request) {
 
     return NextResponse.json(updatedSettings);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update user settings" });
+    console.error("Error updating user settings:", error);
+    return NextResponse.json(
+      { error: "Failed to update user settings" },
+      { status: 400 }
+    );
   }
 }

@@ -32,7 +32,7 @@ import {
   CreateCategorySchemaType,
 } from "@/schema/categories";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleOff, Loader, Loader2, PlusSquare } from "lucide-react";
+import { CircleOff, Loader2, PlusSquare } from "lucide-react";
 import React, { ReactNode, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import Picker from "@emoji-mart/react";
@@ -194,7 +194,6 @@ const CreateCategoryDialoge = ({ type, successCallBack, trigger }: Props) => {
                           onEmojiSelect={(emoji: { native: string }) => {
                             form.setValue("icon", emoji.native);
                             field.onChange(emoji.native);
-                            25;
                           }}
                           style={{ maxHeight: "250px", overflowY: "auto" }}
                         />

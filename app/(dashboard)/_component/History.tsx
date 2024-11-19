@@ -44,7 +44,7 @@ const History = ({ userSettings }: { userSettings: UserSettings }) => {
     historyDataQuery.data && historyDataQuery.data.length > 0;
 
   return (
-    <div className="container mx-auto md:px-4  px-2">
+    <div className="container mx-auto md:px-4 ">
       <h2 className="mt-12 text-3xl font-bold ">History</h2>
       <Card className="col-span-12 my-8 w-full">
         <CardHeader className="gap-2">

@@ -160,7 +160,7 @@ const CreateTransactionDialoge = ({ trigger, type }: Props) => {
               <FormField
                 control={form.control}
                 name="category"
-                render={({ field }) => (
+                render={() => (
                   <FormItem className="w-full">
                     <FormLabel className="mr-2">Category</FormLabel>
                     <FormControl>

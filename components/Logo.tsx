@@ -1,9 +1,10 @@
 import { GiPiggyBank } from "react-icons/gi";
 import React from "react";
+import Link from "next/link";
 
 const Logo = () => {
   return (
-    <a
+    <Link
       href="/"
       className="flex items-center gap-2  w-full justify-center  p-2 "
     >
@@ -11,20 +12,20 @@ const Logo = () => {
       <p className="text-3xl font-bold leading-tight tracking-tighter text-transparent bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text">
         BudgetTracker
       </p>
-    </a>
+    </Link>
   );
 };
 
 export const LogoMobile = () => {
   return (
-    <a
+    <Link
       href="/"
       className="flex items-center gap-2  w-full justify-center  p-2 "
     >
       <p className="text-3xl font-bold leading-tight tracking-tighter text-transparent bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text">
         BudgetTracker
       </p>
-    </a>
+    </Link>
   );
 };
 
