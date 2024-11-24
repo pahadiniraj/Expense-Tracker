@@ -371,7 +371,10 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
           </div>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align={align} className="w-auto">
+      <PopoverContent
+        align={align}
+        className="w-auto h-[300px] overflow-y-auto"
+      >
         <div className="flex py-2">
           <div className="flex">
             <div className="flex flex-col">
