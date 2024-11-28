@@ -9,6 +9,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -26,17 +27,38 @@ import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { DataTableColumnHeader } from "@/components/datatable/ColumnHeader";
 import { cn } from "@/lib/utils";
 import { DataTableFacetedFilter } from "@/components/datatable/FacetedFilters";
+import { DataTableViewOptions } from "@/components/datatable/ColumnToggle";
+import { Button } from "@/components/ui/button";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  DownloadIcon,
+  MoreHorizontal,
+  TrashIcon,
+} from "lucide-react";
 
 interface Props {
   from: Date;
   to: Date;
 }
 
+import { download, generateCsv, mkConfig } from "export-to-csv";
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
+import DeleteTransactionDialog from "./DeleteTransactionDialog";
+
 const emptyData: any[] = [];
 
 type TransactionHistoryRow = GetTransactionHistoryResponseType[0];
 
-export const columns: ColumnDef<TransactionHistoryRow>[] = [
+const columns: ColumnDef<TransactionHistoryRow>[] = [
   {
     accessorKey: "category",
     header: ({ column }) => (
@@ -95,6 +117,9 @@ export const columns: ColumnDef<TransactionHistoryRow>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Type" />
     ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
     cell: ({ row }) => (
       <div
         className={cn(
@@ -108,11 +133,23 @@ export const columns: ColumnDef<TransactionHistoryRow>[] = [
       </div>
     ),
   },
+  {
+    id: "action",
+    enableHiding: false,
+    cell: ({ row }) => <RowAction transaction={row.original} />,
+  },
 ];
+
+const csvConfig = mkConfig({
+  fieldSeparator: ",",
+  decimalSeparator: ".",
+  useKeysAsHeaders: true,
+});
 
 const TransactionTable = ({ from, to }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
   const history = useQuery<GetTransactionHistoryResponseType>({
     queryKey: ["transactions", "history", from, to],
     queryFn: async () => {
@@ -130,10 +167,20 @@ const TransactionTable = ({ from, to }: Props) => {
     },
   });
 
+  const handleExportCSV = (data: any[]) => {
+    const csv = generateCsv(csvConfig)(data);
+    download(csvConfig)(csv);
+  };
+
   const table = useReactTable({
     data: history.data || emptyData,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5,
+      },
+    },
     state: {
       sorting,
       columnFilters,
@@ -142,6 +189,7 @@ const TransactionTable = ({ from, to }: Props) => {
     onColumnFiltersChange: setColumnFilters,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const categoriesOptions = useMemo(() => {
@@ -168,6 +216,39 @@ const TransactionTable = ({ from, to }: Props) => {
                 options={categoriesOptions}
               />
             )}
+            {table.getColumn("type") && (
+              <DataTableFacetedFilter
+                title="Type"
+                column={table.getColumn("type")}
+                options={[
+                  { label: "Income", value: "income" },
+                  { label: "Expense", value: "expense" },
+                ]}
+              />
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={"outline"}
+              size={"sm"}
+              className="ml-auto h-8 lg:flex"
+              onClick={() => {
+                const data = table.getFilteredRowModel().rows.map((row) => ({
+                  category: row.original.category,
+                  categoryIcon: row.original.categoryIcon,
+                  description: row.original.description,
+                  type: row.original.type,
+                  amount: row.original.amount,
+                  formattedAmount: row.original.formattedAmount,
+                  date: row.original.date,
+                }));
+                handleExportCSV(data);
+              }}
+            >
+              <DownloadIcon className="mr-2 h-4 w-4" />
+              Export CSV
+            </Button>
+            <DataTableViewOptions table={table} />
           </div>
         </div>
         <div className="rounded-md border m-4">
@@ -220,9 +301,80 @@ const TransactionTable = ({ from, to }: Props) => {
             </TableBody>
           </Table>
         </div>
+        <div className="flex justify-end m-4 items-center space-x-2">
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to first page</span>
+            <ChevronsLeft />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to previous page</span>
+            <ChevronLeft />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to next page</span>
+            <ChevronRight />
+          </Button>
+          <Button
+            variant="outline"
+            className="hidden h-8 w-8 p-0 lg:flex"
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to last page</span>
+            <ChevronsRight />
+          </Button>
+        </div>
       </SkeletonWrapper>
     </div>
   );
 };
 
 export default TransactionTable;
+
+function RowAction({ transaction }: { transaction: TransactionHistoryRow }) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  return (
+    <>
+      <DeleteTransactionDialog
+        open={showDeleteDialog}
+        setOpen={setShowDeleteDialog}
+        transactionId={transaction.id}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant={"ghost"} className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            className="flex items-center gap-2"
+            onSelect={() => {
+              setShowDeleteDialog((prev) => !prev);
+            }}
+          >
+            <TrashIcon className="h-4 w-4 text-muted-foreground" />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  );
+}
