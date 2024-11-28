@@ -2,11 +2,13 @@
 
 import { DateToUTCDate } from "@/lib/helpers";
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ColumnDef,
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -23,6 +25,7 @@ import {
 import SkeletonWrapper from "@/components/SkeletonWrapper";
 import { DataTableColumnHeader } from "@/components/datatable/ColumnHeader";
 import { cn } from "@/lib/utils";
+import { DataTableFacetedFilter } from "@/components/datatable/FacetedFilters";
 
 interface Props {
   from: Date;
@@ -39,6 +42,9 @@ export const columns: ColumnDef<TransactionHistoryRow>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Category" />
     ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
     cell: ({ row }) => (
       <div className="flex gap-2 capitalize">
         {row.original.categoryIcon}
@@ -76,11 +82,13 @@ export const columns: ColumnDef<TransactionHistoryRow>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Amount" />
     ),
-    cell: ({ row }) => (
-      <div className="text-md rounded-lg bg-gray-400/5 p-2 text-center font-medium">
-        {row.original.formattedAmount}
-      </div>
-    ),
+    cell: ({ row }) => {
+      return (
+        <div className="text-md rounded-lg bg-gray-400/5 p-2 text-center font-medium">
+          {row.original.formattedAmount}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "type",
@@ -104,6 +112,7 @@ export const columns: ColumnDef<TransactionHistoryRow>[] = [
 
 const TransactionTable = ({ from, to }: Props) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const history = useQuery<GetTransactionHistoryResponseType>({
     queryKey: ["transactions", "history", from, to],
     queryFn: async () => {
@@ -127,67 +136,92 @@ const TransactionTable = ({ from, to }: Props) => {
     getCoreRowModel: getCoreRowModel(),
     state: {
       sorting,
+      columnFilters,
     },
     onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
+  const categoriesOptions = useMemo(() => {
+    const categoriesMap = new Map();
+    history.data?.forEach((transaction) => {
+      categoriesMap.set(transaction.category, {
+        value: transaction.category,
+        label: `${transaction.categoryIcon} ${transaction.category}`,
+      });
+    });
+    const uniqueCategories = new Set(categoriesMap.values());
+    return Array.from(uniqueCategories);
+  }, [history.data]);
+
   return (
-    <SkeletonWrapper isLoading={history.isFetching}>
-      <div className="flex flex-wrap items-end justify-between gap-2 py-4 mx-4">
-        TODO: Filters
-      </div>
-      <div className="rounded-md border m-4">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
+    <div className="w-full">
+      <SkeletonWrapper isLoading={history.isFetching}>
+        <div className="flex flex-wrap items-end justify-between gap-2 py-4 mx-4">
+          <div className="flex gap-2">
+            {table.getColumn("category") && (
+              <DataTableFacetedFilter
+                title="Category"
+                column={table.getColumn("category")}
+                options={categoriesOptions}
+              />
             )}
-          </TableBody>
-        </Table>
-      </div>
-    </SkeletonWrapper>
+          </div>
+        </div>
+        <div className="rounded-md border m-4">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </SkeletonWrapper>
+    </div>
   );
 };
 

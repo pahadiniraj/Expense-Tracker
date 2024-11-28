@@ -13,8 +13,10 @@ export function DateToUTCDate(date: Date) {
 }
 
 export function GetFormatterForCurrency(currency: string) {
-  const locale = Currencies.find((c) => c.value === currency)?.locale;
-  return new Intl.NumberFormat(locale, {
+  const locale =
+    Currencies.find((c) => c.value === currency)?.locale || "en-US";
+  const safeLocale = ["ne", "ne-NP"].includes(locale) ? "en-US" : locale;
+  return new Intl.NumberFormat(safeLocale, {
     style: "currency",
     currency,
   });
