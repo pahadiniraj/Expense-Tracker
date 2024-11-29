@@ -8,6 +8,17 @@ const layout = ({ children }: { children: ReactNode }) => {
         <Logo />
       </div>
       <div className="mt-12 ">{children}</div>
+      <div className="text-center mt-4 text-gray-600">
+        Developed by{" "}
+        <a
+          href="https://nirajpahadi.com.np"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+        >
+          Niraj Pahadi
+        </a>
+      </div>
     </div>
   );
 };
